@@ -3,6 +3,9 @@ use std::convert::From;
 use serde_json::Error as JsonError;
 use std::num::ParseIntError;
 
+/// Handy type alias for a `Result` with `HueError`
+pub type Result<T> = ::std::result::Result<T, HueError>;
+
 #[derive(Debug)]
 /// Wrapper for all errors that can occur in this crate
 pub enum HueError {

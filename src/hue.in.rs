@@ -1,5 +1,3 @@
-use serde::{Deserialize};
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// The state of the light with similar structure to `LightCommand`
 pub struct LightState {
@@ -287,40 +285,6 @@ impl Discovery {
     pub fn into_ip(self) -> String{
         let Discovery{internalipaddress, ..} = self;
         internalipaddress
-    }
-}
-
-#[derive(Debug, Deserialize)]
-/// A response that either is an error or a success
-pub struct HueResponse<T: Deserialize>{
-    /// The result from the bridge if it didn't fail
-    pub success: Option<T>,
-    /// The error that was returned from the bridge
-    pub error: Option<Error>
-}
-
-use ::errors::HueError;
-
-impl<T: Deserialize> Into<Result<T, HueError>> for HueResponse<T> {
-    fn into(self) -> Result<T, HueError> {
-        if let Some(t) = self.success{
-            Ok(t)
-        }else if let Some(error) = self.error{
-            Err(error.into())
-        }else{
-            Err(HueError::MalformedResponse)
-        }
-    }
-}
-
-impl<T: Deserialize> HueResponse<T> {
-    /// Maps the success object of the response
-    pub fn map<U: Deserialize, F: FnOnce(T) -> U>(self, f: F) -> HueResponse<U> {
-        let HueResponse{success, error} = self;
-        HueResponse{
-            success: success.map(f),
-            error: error
-        }
     }
 }
 
