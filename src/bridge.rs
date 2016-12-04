@@ -5,6 +5,7 @@ use serde_json::{to_string, from_reader, Map, Value};
 
 use errors::HueError;
 use ::hue::*;
+use ::json::*;
 
 /// Attempt to discover bridges using `https://www.meethue.com/api/nupnp`
 pub fn discover() -> Result<Vec<Discovery>, HueError> {
