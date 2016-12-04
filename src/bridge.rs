@@ -21,7 +21,7 @@ pub fn discover() -> Result<Vec<Discovery>> {
 ///
 /// Waits for about 5 seconds to make sure it gets a response
 #[cfg(feature = "ssdp")]
-pub fn discover_upnp() -> Result<Vec<String>, ::ssdp::SSDPError>{
+pub fn discover_upnp() -> ::std::result::Result<Vec<String>, ::ssdp::SSDPError>{
     use ssdp::header::{HeaderMut, Man, MX, ST};
     use ssdp::message::SearchRequest;
     use ssdp::FieldMap;
