@@ -288,7 +288,7 @@ impl Discovery {
     }
 }
 
-pub use serde_json::{Map, Value};
+pub use serde_json::{Map, Value as JsonValue};
 
 #[derive(Debug, Clone, Deserialize)]
 /// Contains information about what can be updated
@@ -421,8 +421,8 @@ pub struct ConfigurationModifier {
     pub touchlink: Option<bool>
 }
 
-fn null_value() -> Value{
-    Value::Null
+fn null_value() -> JsonValue{
+    JsonValue::Null
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -436,14 +436,14 @@ pub struct FullState {
     pub config: Configuration,
     /// Not yet fully implemented
     #[serde(default = "null_value")]
-    pub schedule: Value,
+    pub schedule: JsonValue,
     /// Not yet fully implemented
     #[serde(default = "null_value")]
-    pub scenes: Value,
+    pub scenes: JsonValue,
     /// Not yet fully implemented
     #[serde(default = "null_value")]
-    pub sensors: Value,
+    pub sensors: JsonValue,
     /// Not yet fully implemented
     #[serde(default = "null_value")]
-    pub rules: Value
+    pub rules: JsonValue
 }
