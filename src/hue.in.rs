@@ -287,15 +287,3 @@ impl Discovery {
         internalipaddress
     }
 }
-
-#[derive(Debug, Deserialize)]
-/// An error object returned from the API
-pub struct Error {
-    /// The URI the error happened on
-    pub address: String,
-    /// A short description of the error
-    pub description: String,
-    /// Its errorcode
-    #[serde(rename="type")]
-    pub code: u16,
-}
