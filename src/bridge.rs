@@ -1,8 +1,6 @@
 use hyper::Client;
 use hyper::client::Body;
 
-// FIXME
-pub use serde_json::{Map,  Value};
 use serde_json::{to_string, from_reader};
 
 use errors::{Result, HueError};
@@ -220,5 +218,28 @@ impl Bridge {
     /// It's not allowed to delete groups of type `LightSource` or `Luminaire`.
     pub fn delete_group(&self, id: usize) -> Result<Vec<Value>> {
         send(self.client.delete(&format!("{}groups/{}", self.url, id))).and_then(extract)
+    }
+
+    // CONFIGURATION
+
+    /// Returns detailed information about the configuration of the bridge.
+    pub fn get_configuration(&self) -> Result<Configuration> {
+        send(self.client.get(&format!("{}config", self.url)))
+    }
+    /// Sets some configuration values.
+    pub fn modify_configuration(&self, command: &ConfigurationModifier) -> Result<Vec<Value>>{
+        send_with_body(self.client.put(&format!("{}config", self.url)), &clean_json(to_string(command)?))
+        .and_then(extract)
+    }
+    /// Deletes the specified user removing them from the whitelist.
+    pub fn delete_user(&self, username: &str) -> Result<Vec<String>> {
+        send(self.client.delete(&format!("{}config/whitelist/{}", self.url, username)))
+            .and_then(extract)
+    }
+    /// Fetches the entire datastore from the bridge.
+    ///
+    /// This is a resource intensive command for the bridge, and should therefore be used sparingly.
+    pub fn get_full_state(&self) -> Result<FullState> {
+        send(self.client.get(&self.url))
     }
 }
