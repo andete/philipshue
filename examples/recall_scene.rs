@@ -1,4 +1,5 @@
 extern crate philipshue;
+extern crate tokio_core;
 
 use std::env;
 use std::num::ParseIntError;
@@ -7,6 +8,8 @@ use philipshue::bridge::Bridge;
 
 mod discover;
 use discover::discover;
+
+use tokio_core::reactor::Core;
 
 fn main() {
     match run() {
@@ -22,11 +25,13 @@ fn run() -> Result<(), ParseIntError> {
                  args[0]);
         return Ok(());
     }
-    let bridge = Bridge::new(discover().pop().unwrap(), &*args[1]);
+    let mut core = Core::new().unwrap();
+    let bridge = Bridge::new(&core, discover().pop().unwrap(), &*args[1]);
     let group_id: usize = args[2].parse()?;
     let scene = &*args[3];
 
-    match bridge.recall_scene_in_group(group_id, scene) {
+    let recall = core.run(bridge.recall_scene_in_group(group_id, scene));
+    match recall {
         Ok(resps) => {
             for resp in resps.into_iter() {
                 println!("{:?}", resp)

@@ -22,7 +22,7 @@ exclude = [
 [features]
 default = ["nupnp"]
 upnp = ["ssdp"]
-nupnp = ["hyper-openssl"]
+nupnp = ["hyper-tls"]
 unstable = ["upnp"]
 
 [dependencies]
@@ -31,5 +31,8 @@ serde_derive = "1.0"
 serde_json = "1.0"
 ssdp = { version = "0.6", optional = true }
 error-chain = "0.10"
-hyper = "0.10"
-hyper-openssl = { version = "0.2", optional = true }
+hyper = "0.11"
+futures = "0.1"
+tokio-core = "0.1"
+tokio-timer = "0.1"
+hyper-tls = { version = "0.1", optional = true }

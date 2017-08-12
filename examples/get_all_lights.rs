@@ -1,9 +1,12 @@
 extern crate philipshue;
+extern crate tokio_core;
 use std::env;
 use philipshue::bridge::Bridge;
 
 mod discover;
 use discover::discover;
+
+use tokio_core::reactor::Core;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -11,9 +14,11 @@ fn main() {
         println!("usage : {:?} <username>", args[0]);
         return;
     }
-    let bridge = Bridge::new(discover().pop().unwrap(), &*args[1]);
+    let mut core = Core::new().unwrap();
+    let bridge = Bridge::new(&core, discover().pop().unwrap(), &*args[1]);
 
-    match bridge.get_all_lights() {
+    let all_lights = core.run(bridge.get_all_lights());
+    match all_lights {
         Ok(lights) => {
             let max_name_len = std::cmp::max(4, lights.values().map(|l| l.name.len()).max().unwrap_or(4));
             println!("id {0:1$} on  bri hue   sat temp  alert   effect    colormode reachable xy",

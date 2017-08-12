@@ -1,10 +1,13 @@
 extern crate philipshue;
+extern crate tokio_core;
 
 use std::env;
 use std::num::ParseIntError;
 
 use philipshue::hue::LightCommand;
 use philipshue::bridge::Bridge;
+
+use tokio_core::reactor::Core;
 
 mod discover;
 use discover::{discover, rgb_to_hsv};
@@ -25,7 +28,8 @@ fn run() -> Result<(), ParseIntError> {
                  args[0]);
         return Ok(());
     }
-    let bridge = Bridge::new(discover().pop().unwrap(), &*args[1]);
+    let mut core = Core::new().unwrap();
+    let bridge = Bridge::new(&core, discover().pop().unwrap(), &*args[1]);
     let group_id: usize = args[2].parse()?;
 
     let cmd = LightCommand::default();
@@ -58,7 +62,8 @@ fn run() -> Result<(), ParseIntError> {
         _ => return Ok(println!("Invalid command!")),
     };
 
-    match bridge.set_group_state(group_id, &cmd) {
+    let resp = core.run(bridge.set_group_state(group_id, &cmd));
+    match resp {
         Ok(resps) => {
             for resp in resps.into_iter() {
                 println!("{:?}", resp)

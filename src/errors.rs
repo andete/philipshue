@@ -2,6 +2,9 @@ use hyper;
 use std::convert::From;
 use serde_json;
 use std::io;
+use std::str;
+use tokio_timer;
+use futures;
 
 impl From<::json::Error> for HueError {
     fn from(e: ::json::Error) -> HueError {
@@ -36,6 +39,8 @@ error_chain! {
         JsonError(serde_json::Error) #[doc = "Json error"];
         HyperError(hyper::Error)     #[doc = "Hyper error"];
         IOError(io::Error)           #[doc = "IO error"];
+        Utf8Error(str::Utf8Error)    #[doc = "UTF8 error"];
+        TimerError(tokio_timer::TimerError) #[doc = "Timer error"];
     }
 }
 

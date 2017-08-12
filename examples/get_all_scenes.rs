@@ -1,4 +1,5 @@
 extern crate philipshue;
+extern crate tokio_core;
 use std::env;
 use philipshue::bridge::Bridge;
 use philipshue::hue::AppData;
@@ -6,15 +7,19 @@ use philipshue::hue::AppData;
 mod discover;
 use discover::discover;
 
+use tokio_core::reactor::Core;
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
         println!("Usage : {:?} <username>", args[0]);
         return;
     }
-    let bridge = Bridge::new(discover().pop().unwrap(), &*args[1]);
+    let mut core = Core::new().unwrap();
+    let bridge = Bridge::new(&core, discover().pop().unwrap(), &*args[1]);
 
-    match bridge.get_all_scenes() {
+    let all_scenes = core.run(bridge.get_all_scenes());
+    match all_scenes {
         Ok(scenes) => {
             let name_len = std::cmp::max(4,
                 scenes.values().map(|s| s.name.len()).max().unwrap_or(4)

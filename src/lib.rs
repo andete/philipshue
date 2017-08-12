@@ -11,7 +11,10 @@ extern crate serde;
 extern crate serde_json;
 extern crate hyper;
 #[cfg(feature = "nupnp")]
-extern crate hyper_openssl;
+extern crate hyper_tls;
+extern crate tokio_core;
+extern crate futures;
+extern crate tokio_timer;
 #[macro_use]
 extern crate error_chain;
 
@@ -29,3 +32,4 @@ pub mod bridge;
 /// Structs mapping the different JSON-objects used with Hue API
 pub mod hue;
 mod json;
+pub mod network;

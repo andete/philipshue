@@ -1,9 +1,12 @@
 extern crate philipshue;
+extern crate tokio_core;
 use std::env;
 use philipshue::bridge::Bridge;
 
 mod discover;
 use discover::discover;
+
+use tokio_core::reactor::Core;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -11,9 +14,11 @@ fn main() {
         println!("Usage : {:?} <username>", args[0]);
         return;
     }
-    let bridge = Bridge::new(discover().pop().unwrap(), &*args[1]);
+    let mut core = Core::new().unwrap();
+    let bridge = Bridge::new(&core, discover().pop().unwrap(), &*args[1]);
 
-    match bridge.get_all_groups() {
+    let all_groups = core.run(bridge.get_all_groups());
+    match all_groups {
         Ok(groups) => {
             let name_len = std::cmp::max(4,
                 groups.values().map(|l| l.name.len()).max().unwrap_or(4)
